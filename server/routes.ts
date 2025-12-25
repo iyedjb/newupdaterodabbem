@@ -1923,7 +1923,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const clientsByDestName = new Map<string, typeof allClients>();
       for (const client of allClients) {
-        if ((client as any).is_deleted) continue;
+        if ((client as any).is_deleted || client.approval_status === "cancelled") continue;
         const list = clientsByDestName.get(client.destination) || [];
         list.push(client);
         clientsByDestName.set(client.destination, list);
@@ -2017,11 +2017,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const seatReservations = await storage.getSeatReservationsByDestination(destination.id);
-      const seatReservationsCount = seatReservations.length;
-      const reservedClientIds = new Set(seatReservations.filter(r => r.client_id).map(r => String(r.client_id)));
-      const reservedChildIds = new Set(seatReservations.filter(r => r.child_id).map(r => String(r.child_id)));
+      
+      // Filter out reservations for cancelled/deleted clients
+      const filteredReservations = [];
+      for (const res of seatReservations) {
+        if (res.status === 'cancelled') continue;
+        const client = await storage.getClient(res.client_id);
+        if (!client || (client as any).is_deleted || client.approval_status === "cancelled") continue;
+        filteredReservations.push(res);
+      }
+      
+      const seatReservationsCount = filteredReservations.length;
+      const reservedClientIds = new Set(filteredReservations.filter(r => r.client_id).map(r => String(r.client_id)));
+      const reservedChildIds = new Set(filteredReservations.filter(r => r.child_id).map(r => String(r.child_id)));
 
-      const clients = await storage.getClientsByDestination(destination.name);
+      const clients = (await storage.getClientsByDestination(destination.name)).filter(c => !(c as any).is_deleted && c.approval_status !== "cancelled");
       
       let clientsWithoutSeatsCount = 0;
       let companionsWithoutSeatsCount = 0;

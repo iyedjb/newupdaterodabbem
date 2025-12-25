@@ -584,7 +584,9 @@ class RTDBStorage implements IStorage {
     try {
       const allClients = await this.getClients();
       return allClients.filter(client => 
-        client.destination === destinationName && !(client as any).is_deleted
+        client.destination === destinationName && 
+        !(client as any).is_deleted && 
+        client.approval_status !== "cancelled"
       );
     } catch (error) {
       console.error('Error getting clients by destination:', error);
@@ -1037,6 +1039,10 @@ class RTDBStorage implements IStorage {
 
   async getChildrenByClientId(clientId: string): Promise<Child[]> {
     try {
+      const client = await this.getClient(clientId);
+      if (!client || (client as any).is_deleted || client.approval_status === "cancelled") {
+        return [];
+      }
       const childrenRef = ref(this.db, 'children');
       const snapshot = await get(childrenRef);
       
@@ -1918,7 +1924,11 @@ class RTDBStorage implements IStorage {
       
       // Get all clients for this destination
       const clients = await this.getClients();
-      const destinationClients = clients.filter(c => c.destination === destinationName);
+      const destinationClients = clients.filter(c => 
+        c.destination === destinationName && 
+        !(c as any).is_deleted && 
+        c.approval_status !== "cancelled"
+      );
       
       for (const client of destinationClients) {
         const isClientDeleted = !!(client as any).is_deleted;
@@ -2066,7 +2076,13 @@ class RTDBStorage implements IStorage {
   async getSeatReservationByDestinationAndSeat(destinationId: string, seatNumber: string): Promise<SeatReservation | undefined> {
     try {
       const reservations = await this.getSeatReservationsByDestination(destinationId);
-      return reservations.find(r => r.seat_number === seatNumber && r.status !== 'cancelled');
+      const filteredReservations = await Promise.all(reservations.map(async (r) => {
+        if (r.status === 'cancelled') return null;
+        const client = await this.getClient(r.client_id);
+        if (!client || (client as any).is_deleted || client.approval_status === "cancelled") return null;
+        return r;
+      }));
+      return filteredReservations.find(r => r !== null && r.seat_number === seatNumber) as SeatReservation | undefined;
     } catch (error) {
       console.error('Error getting seat reservation by destination and seat:', error);
       return undefined;
@@ -2182,6 +2198,10 @@ class RTDBStorage implements IStorage {
 
   async getParcelasByClientId(clientId: string): Promise<Parcela[]> {
     try {
+      const client = await this.getClient(clientId);
+      if (!client || (client as any).is_deleted || client.approval_status === "cancelled") {
+        return [];
+      }
       const parcelas = await this.getParcelas();
       return parcelas.filter(p => p.client_id === clientId);
     } catch (error) {
@@ -5118,3 +5138,4 @@ try {
 }
 
 export { storage };
+

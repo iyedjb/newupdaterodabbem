@@ -114,22 +114,26 @@ export function ReceiptForm({ onSubmit, defaultValues, isLoading }: ReceiptFormP
   });
 
   const handlePayParcela = (parcela: any, parcelaNumber: number) => {
+    // Round to 2 decimal places to prevent floating point issues
+    const roundedAmount = Math.round(parcela.amount * 100) / 100;
     setSelectedParcelaId(parcela.id);
     form.setValue("parcela_id", parcela.id);
-    form.setValue("amount", parcela.amount);
-    form.setValue("amount_in_words", convertNumberToWords(parcela.amount));
+    form.setValue("amount", roundedAmount);
+    form.setValue("amount_in_words", convertNumberToWords(roundedAmount));
     form.setValue("paid_to", `Parcela ${parcelaNumber}`);
-    form.setValue("reference", `Pagamento da Parcela ${parcelaNumber} - ${formatCurrency(parcela.amount)}`);
+    form.setValue("reference", `Pagamento da Parcela ${parcelaNumber} - ${formatCurrency(roundedAmount)}`);
   };
 
   const handlePayCalculatedParcela = (amount: number, parcelaNumber: number) => {
+    // Round to 2 decimal places to prevent floating point issues
+    const roundedAmount = Math.round(amount * 100) / 100;
     const virtualId = `calc-${parcelaNumber}`;
     setSelectedParcelaId(virtualId);
     form.setValue("parcela_id", undefined);
-    form.setValue("amount", amount);
-    form.setValue("amount_in_words", convertNumberToWords(amount));
+    form.setValue("amount", roundedAmount);
+    form.setValue("amount_in_words", convertNumberToWords(roundedAmount));
     form.setValue("paid_to", `Parcela ${parcelaNumber}`);
-    form.setValue("reference", `Pagamento da Parcela ${parcelaNumber} - ${formatCurrency(amount)}`);
+    form.setValue("reference", `Pagamento da Parcela ${parcelaNumber} - ${formatCurrency(roundedAmount)}`);
   };
 
   const handleClearParcela = () => {

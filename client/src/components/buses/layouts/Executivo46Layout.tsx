@@ -58,9 +58,9 @@ export function Executivo46Layout({
                   ? 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-pointer active:bg-red-300 dark:active:bg-red-800'
                   : 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-not-allowed opacity-60'
                 : isSelected
-                  ? 'bg-blue-500 border-blue-600 text-white'
+                  ? 'bg-blue-600 dark:bg-blue-700 border-blue-700 dark:border-blue-800 text-white shadow-lg'
                   : isSelectable === true || isSelectable === "all"
-                    ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-pointer active:bg-green-300 dark:active:bg-green-800'
+                    ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-pointer active:bg-green-300 dark:active:bg-green-800 shadow-sm'
                     : 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-not-allowed opacity-60'
             }
           `}

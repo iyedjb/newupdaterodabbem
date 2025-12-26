@@ -31,28 +31,40 @@ export function Grafico42Layout({
           ? !isReserved 
           : false;
     
+    const handleClick = () => {
+      if (canClick) {
+        try {
+          onSeatSelect(seatNum);
+        } catch (error) {
+          console.error('Error selecting seat:', error);
+        }
+      }
+    };
+
     return (
       <div className="flex flex-col items-center gap-1">
         <button
-          onClick={() => canClick && onSeatSelect(seatNum)}
+          type="button"
+          onClick={handleClick}
           disabled={!canClick}
           data-testid={`seat-${seatNum}`}
+          style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
           className={`
-            w-12 h-12 rounded-md border-2 transition-all flex items-center justify-center text-xs font-semibold
+            w-12 h-12 rounded-md border-2 transition-all flex items-center justify-center text-xs font-semibold select-none
             ${isHighlighted 
               ? 'bg-yellow-400 dark:bg-yellow-500 border-yellow-600 dark:border-yellow-400 animate-pulse ring-4 ring-yellow-300 dark:ring-yellow-600 scale-125 z-10'
               : isReserved 
                 ? isSelectable === "reserved-only" || isSelectable === "all"
-                  ? 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-pointer hover:scale-105 hover:bg-red-300 dark:hover:bg-red-800'
-                  : 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-not-allowed'
+                  ? 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-pointer active:scale-105 active:bg-red-300 dark:active:bg-red-800'
+                  : 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-not-allowed opacity-60'
                 : isSelected
                   ? 'bg-blue-500 border-blue-600 text-white scale-110'
                   : isSelectable === true || isSelectable === "all"
-                    ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-pointer hover:scale-105 hover:bg-green-200 dark:hover:bg-green-800'
-                    : 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-not-allowed'
+                    ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-pointer active:scale-105 active:bg-green-200 dark:active:bg-green-800'
+                    : 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-not-allowed opacity-60'
             }
           `}
-          title={passengerName || (isReserved ? 'Ocupado - Clique para editar' : 'Disponível - Clique para adicionar')}
+          aria-label={`Assento ${number}${passengerName ? ` - ${passengerName}` : ''}`}
         >
           {number}
         </button>

@@ -366,7 +366,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
         setSelectedReferrer(null);
       }
     }
-  }, [client, form, children]);
+  }, [client, form]);
 
   // Watch payment method to conditionally show installment fields
   const paymentMethod = form.watch("payment_method");

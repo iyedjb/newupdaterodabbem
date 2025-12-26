@@ -115,7 +115,7 @@ export function ReceiptForm({ onSubmit, defaultValues, isLoading }: ReceiptFormP
 
   const handlePayParcela = (parcela: any, parcelaNumber: number) => {
     // Round to 2 decimal places to prevent floating point issues
-    const roundedAmount = Math.round(parcela.amount * 100) / 100;
+    const roundedAmount = Number(parseFloat(parcela.amount).toFixed(2));
     setSelectedParcelaId(parcela.id);
     form.setValue("parcela_id", parcela.id);
     form.setValue("amount", roundedAmount);
@@ -126,7 +126,7 @@ export function ReceiptForm({ onSubmit, defaultValues, isLoading }: ReceiptFormP
 
   const handlePayCalculatedParcela = (amount: number, parcelaNumber: number) => {
     // Round to 2 decimal places to prevent floating point issues
-    const roundedAmount = Math.round(amount * 100) / 100;
+    const roundedAmount = Number(parseFloat(amount.toString()).toFixed(2));
     const virtualId = `calc-${parcelaNumber}`;
     setSelectedParcelaId(virtualId);
     form.setValue("parcela_id", undefined);

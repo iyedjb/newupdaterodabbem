@@ -79,5 +79,5 @@ export function calculateAge(birthDate: Date | string | null | undefined, refere
     age--;
   }
   
-  return age + 1;
+  return age;
 }

@@ -179,8 +179,12 @@ export async function generateEmbarquePDF(
         
         const tableData = sortedPassengers.map((passenger, index) => {
           const rgCpf = [];
-          if (passenger.client?.rg) rgCpf.push(`RG: ${passenger.client.rg}`);
-          if (passenger.client?.cpf) rgCpf.push(`CPF: ${passenger.client.cpf}`);
+          
+          // Use companion data if it's a child/companion, otherwise use client data
+          const sourceData = (passenger.is_child && passenger.child_data) ? passenger.child_data : passenger.client;
+          
+          if (sourceData?.rg) rgCpf.push(`RG: ${sourceData.rg}`);
+          if (sourceData?.cpf) rgCpf.push(`CPF: ${sourceData.cpf}`);
           const rgCpfText = rgCpf.length > 0 ? rgCpf.join(', ') : 'N/A';
           
           return [
@@ -238,12 +242,15 @@ export async function generateMotoristaPDF(
           return nameA.localeCompare(nameB, 'pt-BR');
         });
         
-        const tableData = sortedPassengers.map((passenger, index) => [
-          (index + 1).toString(),
-          sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
-          passenger.client?.cpf || 'N/A',
-          passenger.client?.rg || 'N/A',
-        ]);
+        const tableData = sortedPassengers.map((passenger, index) => {
+          const sourceData = (passenger.is_child && passenger.child_data) ? passenger.child_data : passenger.client;
+          return [
+            (index + 1).toString(),
+            sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
+            sourceData?.cpf || 'N/A',
+            sourceData?.rg || 'N/A',
+          ];
+        });
         
         drawTable(
           doc,

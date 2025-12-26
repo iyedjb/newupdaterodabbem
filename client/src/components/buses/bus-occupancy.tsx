@@ -124,9 +124,13 @@ export function BusOccupancy() {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch unassigned clients');
-      return response.json();
+      const data = await response.json();
+      
+      // Filter out clients that already have a seat reserved in this destination
+      const reservedClientIds = new Set(reservations.map(r => r.client_id));
+      return data.filter((client: any) => !reservedClientIds.has(client.id));
     },
-    enabled: !!selectedDestination?.name,
+    enabled: !!selectedDestination?.name && !!reservations,
   });
 
   const updateSeatMutation = useMutation({

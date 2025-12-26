@@ -56,6 +56,7 @@ const getPaymentMethodLabel = (method: string | undefined): string => {
     'boleto': 'Boleto',
     'link': 'Link',
     'credito_viagens_anteriores': 'Crédito de Viagens Anteriores',
+    'credito_viagens_interiores': 'Crédito de Viagens Interiores',
   };
   return labels[method || ''] || method || 'Não informado';
 };
@@ -812,6 +813,7 @@ export function ReceiptForm({ onSubmit, defaultValues, isLoading }: ReceiptFormP
                       <SelectItem value="debito">Cartão de Débito</SelectItem>
                       <SelectItem value="boleto">Boleto Bancário</SelectItem>
                       <SelectItem value="link">Link</SelectItem>
+                      <SelectItem value="credito_viagens_interiores">Crédito de Viagens Interiores</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -521,6 +521,7 @@ export default function ParcelasPage() {
                     <SelectItem value="debito">Débito</SelectItem>
                     <SelectItem value="boleto">Boleto</SelectItem>
                     <SelectItem value="link">Link de Pagamento</SelectItem>
+                    <SelectItem value="credito_viagens_interiores">Crédito de Viagens Interiores</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

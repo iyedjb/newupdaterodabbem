@@ -29,7 +29,7 @@ export const phoneNumberSchema = z.object({
 
 // Down payment split schema for multiple payment methods
 export const downPaymentSplitSchema = z.object({
-  method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_anteriores"]),
+  method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_anteriores", "credito_viagens_interiores"]),
   amount: z.number().positive("Valor deve ser maior que zero"),
 });
 
@@ -73,7 +73,7 @@ export const clientSchema = z.object({
   travel_price: z.number().positive("Preço da viagem deve ser maior que zero").optional(),
   travel_level: z.enum(["ouro", "prata", "bronze"]).optional(), // Travel level tier (gold/silver/bronze)
   down_payment: z.number().nonnegative("Valor da entrada deve ser maior ou igual a zero").optional(), // Entrada
-  down_payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_anteriores"]).optional(), // Método de pagamento da entrada
+  down_payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_anteriores", "credito_viagens_interiores"]).optional(), // Método de pagamento da entrada
   down_payment_splits: z.array(downPaymentSplitSchema).optional(), // Multiple payment methods for entrada
   used_credit_id: z.string().optional(), // ID of the credit used for entrada (when down_payment_method is "credito_viagens_anteriores")
   first_payment_discount_type: z.enum(["none", "3", "5", "custom"]).optional(), // First payment discount
@@ -364,7 +364,7 @@ export const receiptSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   amount_in_words: z.string().min(1, "Valor por extenso é obrigatório"),
   reference: z.string().min(1, "Referência é obrigatória"),
-  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link"]),
+  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_interiores"]),
   payment_date: z.date(),
   destination_id: z.string().optional(),
   notes: z.string().optional(),
@@ -394,7 +394,7 @@ export const parcelaSchema = z.object({
   installment_number: z.number().optional(),
   total_installments: z.number().optional(),
   is_paid: z.boolean().default(false),
-  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link"]).optional(),
+  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_interiores"]).optional(),
   paid_date: z.date().optional(),
   notes: z.string().optional(),
   status: z.enum(["pending", "paid", "overdue"]).default("pending"),
@@ -501,7 +501,7 @@ export const financialTransactionSchema = z.object({
   description: z.string(),
   amount: z.number(),
   transaction_date: z.date(),
-  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link"]),
+  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_interiores"]),
   client_id: z.string().optional(),
   created_by_email: z.string().email(),
   created_by_name: z.string(),
@@ -533,7 +533,7 @@ export const billSchema = z.object({
   category: z.string().optional(), // e.g., "Aluguel", "Internet", "Salário"
   created_by_email: z.string().email(),
   created_by_name: z.string(),
-  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link"]).optional(),
+  payment_method: z.enum(["pix", "dinheiro", "credito", "debito", "boleto", "link", "credito_viagens_interiores"]).optional(),
   paid_at: z.date().optional(),
   created_at: z.date(),
   updated_at: z.date(),

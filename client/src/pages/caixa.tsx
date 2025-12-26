@@ -379,6 +379,7 @@ export default function Caixa() {
                 <SelectItem value="debito">Débito</SelectItem>
                 <SelectItem value="boleto">Boleto</SelectItem>
                 <SelectItem value="link">Link</SelectItem>
+                <SelectItem value="credito_viagens_interiores">Crédito de Viagens Interiores</SelectItem>
               </SelectContent>
             </Select>
 

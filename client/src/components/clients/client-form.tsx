@@ -1746,6 +1746,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
                           <SelectItem value="credito_banco">Crédito do Banco</SelectItem>
                           <SelectItem value="boleto">Boleto</SelectItem>
                           <SelectItem value="link">Link</SelectItem>
+                          <SelectItem value="credito_viagens_interiores">Crédito de Viagens Interiores</SelectItem>
                           <SelectItem value="brinde">Brinde (Viagem Grátis)</SelectItem>
                         </SelectContent>
                       </Select>

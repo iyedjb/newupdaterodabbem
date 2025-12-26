@@ -357,6 +357,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
         contract_type: client.contract_type || 'normal',
         client_type: (client as any).client_type || 'agencia',
         operator_name: (client as any).operator_name,
+        children: [],
       });
       
       // If there's a referredBy value but no selectedReferrer yet, the query will handle it

@@ -161,7 +161,7 @@ export default function ClientBirthdays() {
         const birthdate = typeof client.birthdate === 'string'
           ? parseLocalDate(client.birthdate.split('T')[0])
           : (client.birthdate instanceof Date ? client.birthdate : new Date(client.birthdate!));
-        const age = calculateAge(client.birthdate);
+        const age = calculateAge(client.birthdate, currentMonth);
         return [
           `${client.first_name} ${client.last_name}`,
           format(birthdate, "dd/MM", { locale: ptBR }),

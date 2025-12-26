@@ -743,12 +743,29 @@ export function ReceiptForm({ onSubmit, defaultValues, isLoading }: ReceiptFormP
                 <FormControl>
                   <Input
                     {...field}
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
+                    type="text"
+                    placeholder="0,00"
+                    value={field.value === 0 ? "" : field.value.toString().replace('.', ',')}
                     onChange={(e) => {
-                      field.onChange(parseFloat(e.target.value));
-                      handleAmountChange(e.target.value);
+                      let val = e.target.value.replace(/[^\d,]/g, "");
+                      // Ensure only one comma
+                      const commaCount = (val.match(/,/g) || []).length;
+                      if (commaCount > 1) {
+                        const parts = val.split(",");
+                        val = parts[0] + "," + parts.slice(1).join("");
+                      }
+                      
+                      // Limit to 2 decimal places
+                      if (val.includes(",")) {
+                        const [int, dec] = val.split(",");
+                        if (dec.length > 2) {
+                          val = `${int},${dec.slice(0, 2)}`;
+                        }
+                      }
+                      
+                      const numericValue = parseFloat(val.replace(',', '.')) || 0;
+                      field.onChange(numericValue);
+                      handleAmountChange(val);
                     }}
                     data-testid="input-amount"
                   />

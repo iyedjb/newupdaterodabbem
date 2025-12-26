@@ -3251,7 +3251,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       parcelas = parcelas.filter(p => {
         const client = clientMap.get(p.client_id);
         if (!client) return false;
-        return !client.is_deleted && !client.is_cancelled;
+        // Ensure both is_deleted and is_cancelled are false
+        return client.is_deleted === false && client.is_cancelled === false;
       });
       
       res.json(parcelas);

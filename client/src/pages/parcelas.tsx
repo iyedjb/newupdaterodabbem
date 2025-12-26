@@ -414,10 +414,19 @@ export default function ParcelasPage() {
                           Pago
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1 text-orange-600">
-                          <Circle className="h-4 w-4" />
-                          Pendente
-                        </span>
+                        (() => {
+                          const now = new Date();
+                          const isOverdue = parcela.due_date < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                          if (isOverdue) {
+                            return (
+                              <span className="flex items-center gap-1 text-red-600">
+                                <Circle className="h-4 w-4" />
+                                Atrasado
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()
                       )}
                     </TableCell>
                     <TableCell data-testid={`text-paid-by-${parcela.id}`}>
@@ -443,7 +452,7 @@ export default function ParcelasPage() {
                           disabled={togglePaidMutation.isPending}
                           data-testid={`button-toggle-paid-${parcela.id}`}
                         >
-                          {parcela.is_paid ? 'Marcar como Pendente' : 'Marcar como Pago'}
+                          {parcela.is_paid ? 'Marcar como não Pago' : 'Marcar como Pago'}
                         </Button>
                         <Button
                           variant="ghost"

@@ -3242,7 +3242,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const month = parseInt(req.params.month);
       const year = parseInt(req.params.year);
-      const parcelas = await storage.getParcelasByMonth(month, year);
+      let parcelas = await storage.getParcelasByMonth(month, year);
+      
+      // Filter out parcelas for deleted or cancelled clients
+      const clients = await storage.getClients();
+      const clientMap = new Map(clients.map(c => [c.id, c]));
+      
+      parcelas = parcelas.filter(p => {
+        const client = clientMap.get(p.client_id);
+        if (!client) return false;
+        return !client.is_deleted && !client.is_cancelled;
+      });
+      
       res.json(parcelas);
     } catch (error) {
       console.error("Error getting parcelas by month:", error);

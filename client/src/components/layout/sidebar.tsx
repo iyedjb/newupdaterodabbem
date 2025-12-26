@@ -225,7 +225,7 @@ export function Sidebar() {
     if (userRole === 'vadmin') {
       return navigationCategories;
     } else {
-      const allowedPaths = ['/', '/clients', '/client-history', '/prospects', '/destinations', '/buses', '/programa-viagens', '/caixa', '/receipts', '/creditos', '/controle-de-ponto', '/crm', '/crm/calendar', '/funcionarios', '/client-birthdays'];
+      const allowedPaths = ['/', '/clients', '/client-history', '/prospects', '/destinations', '/buses', '/programa-viagens', '/caixa', '/parcelas', '/receipts', '/creditos', '/controle-de-ponto', '/crm', '/crm/calendar', '/funcionarios', '/client-birthdays'];
       
       return navigationCategories.filter(item => {
         if (isCategory(item)) {

@@ -763,7 +763,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
   };
 
   const addChild = () => {
-    setChildren([...children, {
+    const newChildren = [...children, {
       name: '',
       birthdate: new Date(),
       phone: '',
@@ -772,11 +772,15 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
       passport_number: '',
       relationship: 'filho',
       price: 0,
-    }]);
+    }];
+    setChildren(newChildren);
+    form.setValue('children', newChildren);
   };
 
   const removeChild = (index: number) => {
-    setChildren(children.filter((_, i) => i !== index));
+    const newChildren = children.filter((_, i) => i !== index);
+    setChildren(newChildren);
+    form.setValue('children', newChildren);
   };
 
   const updateChild = (index: number, field: keyof Omit<Child, 'id' | 'client_id'>, value: any) => {
@@ -784,6 +788,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
       i === index ? { ...child, [field]: value } : child
     );
     setChildren(updated);
+    form.setValue('children', updated);
   };
 
   // Phone number management

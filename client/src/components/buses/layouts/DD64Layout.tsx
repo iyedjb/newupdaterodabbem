@@ -24,18 +24,19 @@ export function DD64Layout({
     const isSelected = selectedSeat === seatNum;
     const isHighlighted = highlightedSeat === seatNum;
     const passengerName = seatInfo[seatNum];
+    const isGuide = seatNum === "45";
     
     const canClick = isSelectable === "reserved-only" 
       ? isReserved 
       : isSelectable === "all"
         ? true
         : isSelectable === true 
-          ? !isReserved 
+          ? (!isReserved && !isGuide)
           : false;
     
     // Safe click handler for all devices
     const handleClick = () => {
-      if (canClick) {
+      if (canClick && !isGuide) {
         try {
           onSeatSelect(seatNum);
         } catch (error) {
@@ -49,27 +50,29 @@ export function DD64Layout({
         <button
           type="button"
           onClick={handleClick}
-          disabled={!canClick}
+          disabled={!canClick || isGuide}
           data-testid={`seat-${seatNum}`}
           style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
           className={`
             w-10 h-10 sm:w-12 sm:h-12 rounded-md border-2 flex items-center justify-center text-xs font-semibold select-none
-            ${isHighlighted 
-              ? 'bg-yellow-400 dark:bg-yellow-500 border-yellow-600 dark:border-yellow-400 animate-pulse ring-4 ring-yellow-300 dark:ring-yellow-600 z-10'
-              : isReserved 
-                ? isSelectable === "reserved-only" || isSelectable === "all"
-                  ? 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-pointer active:bg-red-300 dark:active:bg-red-800'
-                  : 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-not-allowed opacity-60'
-                : isSelected
-                  ? 'bg-blue-600 dark:bg-blue-700 border-blue-700 dark:border-blue-800 text-white shadow-lg'
-                  : isSelectable === true || isSelectable === "all"
-                    ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-pointer active:bg-green-300 dark:active:bg-green-800 shadow-sm'
-                    : 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-not-allowed opacity-60'
+            ${isGuide
+              ? 'bg-gray-400 dark:bg-gray-600 border-gray-500 dark:border-gray-500 text-white cursor-not-allowed opacity-80'
+              : isHighlighted 
+                ? 'bg-yellow-400 dark:bg-yellow-500 border-yellow-600 dark:border-yellow-400 animate-pulse ring-4 ring-yellow-300 dark:ring-yellow-600 z-10'
+                : isReserved 
+                  ? isSelectable === "reserved-only" || isSelectable === "all"
+                    ? 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-pointer active:bg-red-300 dark:active:bg-red-800'
+                    : 'bg-red-200 dark:bg-red-900 border-red-400 dark:border-red-700 cursor-not-allowed opacity-60'
+                  : isSelected
+                    ? 'bg-blue-600 dark:bg-blue-700 border-blue-700 dark:border-blue-800 text-white shadow-lg'
+                    : isSelectable === true || isSelectable === "all"
+                      ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-pointer active:bg-green-300 dark:active:bg-green-800 shadow-sm'
+                      : 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 cursor-not-allowed opacity-60'
             }
           `}
-          aria-label={`Assento ${number}${passengerName ? ` - ${passengerName}` : ''}`}
+          aria-label={isGuide ? 'Guia' : `Assento ${number}${passengerName ? ` - ${passengerName}` : ''}`}
         >
-          {number}
+          {isGuide ? 'GUIA' : number}
         </button>
         {passengerName && (
           <div className={`text-[8px] sm:text-[9px] text-center font-medium max-w-[40px] sm:max-w-[48px] truncate ${isHighlighted ? 'text-yellow-800 dark:text-yellow-200 font-bold' : 'text-red-800 dark:text-red-200'}`} title={passengerName}>

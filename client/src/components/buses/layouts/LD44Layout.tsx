@@ -24,17 +24,18 @@ export function LD44Layout({
     const isSelected = selectedSeat === seatNum;
     const isHighlighted = highlightedSeat === seatNum;
     const passengerName = seatInfo[seatNum];
+    const isGuide = seatNum === "43";
     
     const canClick = isSelectable === "reserved-only" 
       ? isReserved 
       : isSelectable === "all"
         ? true
         : isSelectable === true 
-          ? !isReserved 
+          ? (!isReserved && !isGuide)
           : false;
     
     const handleClick = () => {
-      if (canClick) {
+      if (canClick && !isGuide) {
         try {
           onSeatSelect(seatNum);
         } catch (error) {
@@ -48,27 +49,29 @@ export function LD44Layout({
         <button
           type="button"
           onClick={handleClick}
-          disabled={!canClick}
+          disabled={!canClick || isGuide}
           data-testid={`seat-${seatNum}`}
           style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
           className={`
             w-9 h-9 sm:w-10 sm:h-10 rounded-lg border-2 flex items-center justify-center text-xs font-bold shadow-md select-none
-            ${isHighlighted 
-              ? 'bg-yellow-400 dark:bg-yellow-500 border-yellow-600 dark:border-yellow-400 animate-pulse ring-4 ring-yellow-300 dark:ring-yellow-600 z-10'
-              : isReserved 
-                ? isSelectable === "reserved-only" || isSelectable === "all"
-                  ? 'bg-red-500 dark:bg-red-700 border-red-600 dark:border-red-800 text-white cursor-pointer active:bg-red-600 dark:active:bg-red-600 shadow-lg'
-                  : 'bg-red-500 dark:bg-red-700 border-red-600 dark:border-red-800 text-white cursor-not-allowed opacity-60'
-                : isSelected
-                  ? 'bg-blue-600 dark:bg-blue-700 border-blue-700 dark:border-blue-800 text-white shadow-lg'
-                  : isSelectable === true || isSelectable === "all"
-                    ? 'bg-green-400 dark:bg-green-600 border-green-500 dark:border-green-700 text-green-900 dark:text-green-100 cursor-pointer active:bg-green-500 dark:active:bg-green-500 shadow-md'
-                    : 'bg-green-400 dark:bg-green-600 border-green-500 dark:border-green-700 text-green-900 dark:text-green-100 cursor-not-allowed opacity-60'
+            ${isGuide
+              ? 'bg-gray-400 dark:bg-gray-600 border-gray-500 dark:border-gray-500 text-white cursor-not-allowed opacity-80'
+              : isHighlighted 
+                ? 'bg-yellow-400 dark:bg-yellow-500 border-yellow-600 dark:border-yellow-400 animate-pulse ring-4 ring-yellow-300 dark:ring-yellow-600 z-10'
+                : isReserved 
+                  ? isSelectable === "reserved-only" || isSelectable === "all"
+                    ? 'bg-red-500 dark:bg-red-700 border-red-600 dark:border-red-800 text-white cursor-pointer active:bg-red-600 dark:active:bg-red-600 shadow-lg'
+                    : 'bg-red-500 dark:bg-red-700 border-red-600 dark:border-red-800 text-white cursor-not-allowed opacity-60'
+                  : isSelected
+                    ? 'bg-blue-600 dark:bg-blue-700 border-blue-700 dark:border-blue-800 text-white shadow-lg'
+                    : isSelectable === true || isSelectable === "all"
+                      ? 'bg-green-400 dark:bg-green-600 border-green-500 dark:border-green-700 text-green-900 dark:text-green-100 cursor-pointer active:bg-green-500 dark:active:bg-green-500 shadow-md'
+                      : 'bg-green-400 dark:bg-green-600 border-green-500 dark:border-green-700 text-green-900 dark:text-green-100 cursor-not-allowed opacity-60'
             }
           `}
-          aria-label={`Assento ${number}${passengerName ? ` - ${passengerName}` : ''}`}
+          aria-label={isGuide ? 'Guia' : `Assento ${number}${passengerName ? ` - ${passengerName}` : ''}`}
         >
-          {number}
+          {isGuide ? 'GUIA' : number}
         </button>
         {passengerName && (
           <div className={`text-[7px] sm:text-[8px] text-center font-semibold max-w-[36px] sm:max-w-[40px] truncate leading-tight ${isHighlighted ? 'text-yellow-800 dark:text-yellow-200 font-bold' : 'text-gray-700 dark:text-gray-400'}`} title={passengerName}>

@@ -181,10 +181,15 @@ export async function generateEmbarquePDF(
           const rgCpf = [];
           
           // Use companion data if it's a child/companion, otherwise use client data
-          const sourceData = (passenger.is_child && passenger.child_data) ? passenger.child_data : passenger.client;
+          // FALLBACK: If child data is missing doc info, check parent client data
+          const childData = (passenger.is_child && passenger.child_data) ? passenger.child_data : null;
+          const clientData = passenger.client;
           
-          if (sourceData?.rg) rgCpf.push(`RG: ${sourceData.rg}`);
-          if (sourceData?.cpf) rgCpf.push(`CPF: ${sourceData.cpf}`);
+          const rg = childData?.rg || clientData?.rg;
+          const cpf = childData?.cpf || clientData?.cpf;
+          
+          if (rg) rgCpf.push(`RG: ${rg}`);
+          if (cpf) rgCpf.push(`CPF: ${cpf}`);
           const rgCpfText = rgCpf.length > 0 ? rgCpf.join(', ') : 'N/A';
           
           return [
@@ -243,12 +248,13 @@ export async function generateMotoristaPDF(
         });
         
         const tableData = sortedPassengers.map((passenger, index) => {
-          const sourceData = (passenger.is_child && passenger.child_data) ? passenger.child_data : passenger.client;
+          const childData = (passenger.is_child && passenger.child_data) ? passenger.child_data : null;
+          const clientData = passenger.client;
           return [
             (index + 1).toString(),
             sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
-            sourceData?.cpf || 'N/A',
-            sourceData?.rg || 'N/A',
+            childData?.cpf || clientData?.cpf || 'N/A',
+            childData?.rg || clientData?.rg || 'N/A',
           ];
         });
         

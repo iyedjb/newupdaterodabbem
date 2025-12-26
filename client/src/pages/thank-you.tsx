@@ -33,6 +33,9 @@ export default function ThankYou() {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else {
+      // Use the same client-side generator if possible, but the current PDF route
+      // might be doing something else. However, the user wants the EXACT same version.
+      // Redirecting to /pdf/:token which uses generateTravelContract
       window.location.href = `/pdf/${token}`;
     }
   }, [countdown, token]);

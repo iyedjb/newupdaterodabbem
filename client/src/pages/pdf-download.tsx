@@ -40,9 +40,10 @@ export default function PdfDownload() {
     setGenerationError(null);
     
     try {
+      // Get the full client with children if possible, though approvalData should have what we need
       const clientWithChildren = {
         ...approvalData.client,
-        children: []
+        children: (approvalData.client as any).children || []
       };
       await generateTravelContract(clientWithChildren);
       setHasGenerated(true);

@@ -2382,6 +2382,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const normalizedReservedNames = new Set(reservations.map(r => r.client_name?.toLowerCase().trim()));
       
       for (const client of allClients) {
+        // Skip cancelled clients
+        if (client.approval_status === "cancelled" || (client as any).is_cancelled) continue;
+
         const clientName = `${client.first_name} ${client.last_name}`.toLowerCase().trim();
         // Add client if they don't have a seat AND their name isn't already on a seat
         if (!reservedClientIds.has(client.id) && !normalizedReservedNames.has(clientName)) {

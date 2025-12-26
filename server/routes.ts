@@ -619,12 +619,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // When searching, include deleted clients so they appear with a "deleted" badge
       // When NOT searching, filter out deleted clients to hide them from the main list
       if (!search) {
-        clients = clients.filter((client: any) => !client.is_deleted && !client.is_cancelled);
+        clients = clients.filter((client: any) => {
+          const isDeleted = client.is_deleted === true || client.is_deleted === "true" || client.is_deleted === 1;
+          const isCancelled = client.is_cancelled === true || client.is_cancelled === "true" || client.is_cancelled === 1;
+          return !isDeleted && !isCancelled;
+        });
       }
       
       // For receipt selection specifically (limit=10 and search exists), also filter out cancelled/deleted
       if (req.query.limit === "10" && search) {
-        clients = clients.filter((client: any) => !client.is_deleted && !client.is_cancelled);
+        clients = clients.filter((client: any) => {
+          const isDeleted = client.is_deleted === true || client.is_deleted === "true" || client.is_deleted === 1;
+          const isCancelled = client.is_cancelled === true || client.is_cancelled === "true" || client.is_cancelled === 1;
+          return !isDeleted && !isCancelled;
+        });
       }
       
       // Apply search filter
@@ -3251,8 +3259,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       parcelas = parcelas.filter(p => {
         const client = clientMap.get(p.client_id);
         if (!client) return false;
-        // Ensure both is_deleted and is_cancelled are false
-        return client.is_deleted === false && client.is_cancelled === false;
+        // Ensure we check for existence and then the value
+        const isDeleted = client.is_deleted === true || client.is_deleted === "true" || client.is_deleted === 1;
+        const isCancelled = client.is_cancelled === true || client.is_cancelled === "true" || client.is_cancelled === 1;
+        return !isDeleted && !isCancelled;
       });
       
       res.json(parcelas);

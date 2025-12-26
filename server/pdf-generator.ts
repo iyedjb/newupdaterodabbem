@@ -180,18 +180,26 @@ export async function generateEmbarquePDF(
         const tableData = sortedPassengers.map((passenger, index) => {
           const rgCpf = [];
           
-          // Use companion data if it's a child/companion, otherwise use client data
-          // FALLBACK: If child data is missing doc info, check parent client data
-          const childData = (passenger.is_child && passenger.child_data) ? passenger.child_data : null;
-          const clientData = passenger.client;
+          const getCpf = () => {
+            if (passenger.is_child && passenger.child_data) {
+              return passenger.child_data.cpf || 'N/A';
+            }
+            // Check if the passenger name matches a child/companion name even if not explicitly marked is_child in the payload
+            return passenger.client?.cpf || 'N/A';
+          };
           
-          // Only fallback to client data if this IS a companion of THAT client
-          // We check if child_data belongs to a companion record that is actually the passenger
-          const rg = childData?.rg || (passenger.is_child ? '' : clientData?.rg);
-          const cpf = childData?.cpf || (passenger.is_child ? '' : clientData?.cpf);
+          const getRg = () => {
+            if (passenger.is_child && passenger.child_data) {
+              return passenger.child_data.rg || 'N/A';
+            }
+            return passenger.client?.rg || 'N/A';
+          };
           
-          if (rg) rgCpf.push(`RG: ${rg}`);
-          if (cpf) rgCpf.push(`CPF: ${cpf}`);
+          const cpf = getCpf();
+          const rg = getRg();
+          
+          if (rg !== 'N/A') rgCpf.push(`RG: ${rg}`);
+          if (cpf !== 'N/A') rgCpf.push(`CPF: ${cpf}`);
           const rgCpfText = rgCpf.length > 0 ? rgCpf.join(', ') : 'N/A';
           
           return [
@@ -250,17 +258,25 @@ export async function generateMotoristaPDF(
         });
         
         const tableData = sortedPassengers.map((passenger, index) => {
-          const childData = (passenger.is_child && passenger.child_data) ? passenger.child_data : null;
-          const clientData = passenger.client;
+          const getCpf = () => {
+            if (passenger.is_child && passenger.child_data) {
+              return passenger.child_data.cpf || 'N/A';
+            }
+            return passenger.client?.cpf || 'N/A';
+          };
           
-          const cpf = childData?.cpf || (passenger.is_child ? '' : clientData?.cpf);
-          const rg = childData?.rg || (passenger.is_child ? '' : clientData?.rg);
+          const getRg = () => {
+            if (passenger.is_child && passenger.child_data) {
+              return passenger.child_data.rg || 'N/A';
+            }
+            return passenger.client?.rg || 'N/A';
+          };
           
           return [
             (index + 1).toString(),
             sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
-            cpf || 'N/A',
-            rg || 'N/A',
+            getCpf(),
+            getRg(),
           ];
         });
         

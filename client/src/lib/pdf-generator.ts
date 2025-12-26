@@ -2140,9 +2140,25 @@ export async function generateEmbarquePDF(
         return nameA.localeCompare(nameB, 'pt-BR');
       })
       .map((passenger, index) => {
+        const getCpf = () => {
+          if (passenger.is_child && passenger.child_data) {
+            return passenger.child_data.cpf || 'N/A';
+          }
+          return passenger.client?.cpf || 'N/A';
+        };
+        
+        const getRg = () => {
+          if (passenger.is_child && passenger.child_data) {
+            return passenger.child_data.rg || 'N/A';
+          }
+          return passenger.client?.rg || 'N/A';
+        };
+
         const rgCpf = [];
-        if (passenger.client?.rg) rgCpf.push(`RG: ${passenger.client.rg}`);
-        if (passenger.client?.cpf) rgCpf.push(`CPF: ${passenger.client.cpf}`);
+        const rg = getRg();
+        const cpf = getCpf();
+        if (rg !== 'N/A') rgCpf.push(`RG: ${rg}`);
+        if (cpf !== 'N/A') rgCpf.push(`CPF: ${cpf}`);
         const rgCpfText = rgCpf.length > 0 ? rgCpf.join('\n') : 'N/A';
         
         return [
@@ -2246,9 +2262,25 @@ export async function generateListaCompletaPDF(
         return nameA.localeCompare(nameB, 'pt-BR');
       })
       .map((passenger, index) => {
+        const getCpf = () => {
+          if (passenger.is_child && passenger.child_data) {
+            return passenger.child_data.cpf || 'N/A';
+          }
+          return passenger.client?.cpf || 'N/A';
+        };
+        
+        const getRg = () => {
+          if (passenger.is_child && passenger.child_data) {
+            return passenger.child_data.rg || 'N/A';
+          }
+          return passenger.client?.rg || 'N/A';
+        };
+
         const rgCpf = [];
-        if (passenger.client?.rg) rgCpf.push(`RG: ${passenger.client.rg}`);
-        if (passenger.client?.cpf) rgCpf.push(`CPF: ${passenger.client.cpf}`);
+        const rg = getRg();
+        const cpf = getCpf();
+        if (rg !== 'N/A') rgCpf.push(`RG: ${rg}`);
+        if (cpf !== 'N/A') rgCpf.push(`CPF: ${cpf}`);
         const rgCpfText = rgCpf.length > 0 ? rgCpf.join('\n') : 'N/A';
         
         const phone = passenger.client?.phone || 'N/A';
@@ -2337,12 +2369,28 @@ export async function generateMotoristaPDF(
   if (passengers.length > 0) {
     const tableData = passengers
       .sort((a, b) => sanitizeTextForPDF(a.client_name || '').localeCompare(sanitizeTextForPDF(b.client_name || '')))
-      .map((passenger, index) => [
-        (index + 1).toString(),
-        sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
-        passenger.client?.cpf || 'N/A',
-        passenger.client?.rg || 'N/A',
-      ]);
+      .map((passenger, index) => {
+        const getCpf = () => {
+          if (passenger.is_child && passenger.child_data) {
+            return passenger.child_data.cpf || 'N/A';
+          }
+          return passenger.client?.cpf || 'N/A';
+        };
+        
+        const getRg = () => {
+          if (passenger.is_child && passenger.child_data) {
+            return passenger.child_data.rg || 'N/A';
+          }
+          return passenger.client?.rg || 'N/A';
+        };
+
+        return [
+          (index + 1).toString(),
+          sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
+          getCpf(),
+          getRg(),
+        ];
+      });
     
     autoTable(doc, {
       startY: 100,

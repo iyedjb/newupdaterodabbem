@@ -215,9 +215,14 @@ export function ReceiptForm({ onSubmit, defaultValues, isLoading }: ReceiptFormP
 
   // Auto-generate amount in words when amount changes
   const handleAmountChange = (value: string) => {
-    const numValue = parseFloat(value);
+    // Replace comma with dot for parsing
+    const normalizedValue = value.replace(',', '.');
+    const numValue = parseFloat(normalizedValue);
+    
     if (!isNaN(numValue) && numValue > 0) {
-      const words = convertNumberToWords(numValue);
+      // Ensure we only have 2 decimal places for the word conversion
+      const roundedValue = Math.round(numValue * 100) / 100;
+      const words = convertNumberToWords(roundedValue);
       form.setValue('amount_in_words', words);
     }
   };

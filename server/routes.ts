@@ -619,7 +619,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // When searching, include deleted clients so they appear with a "deleted" badge
       // When NOT searching, filter out deleted clients to hide them from the main list
       if (!search) {
-        clients = clients.filter((client: any) => !client.is_deleted);
+        clients = clients.filter((client: any) => !client.is_deleted && !client.is_cancelled);
+      }
+      
+      // For receipt selection specifically (limit=10 and search exists), also filter out cancelled/deleted
+      if (req.query.limit === "10" && search) {
+        clients = clients.filter((client: any) => !client.is_deleted && !client.is_cancelled);
       }
       
       // Apply search filter

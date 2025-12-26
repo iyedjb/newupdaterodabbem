@@ -144,6 +144,9 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
   // Track previous destination to detect actual changes (vs initial load)
   const prevDestinationRef = useRef<string | null>(null);
   
+  // Track which client we've loaded children for (to avoid reloading on every render)
+  const loadedClientIdRef = useRef<string | null>(null);
+  
   // Referral autocomplete state
   const [referralSearchTerm, setReferralSearchTerm] = useState('');
   const [referralOpen, setReferralOpen] = useState(false);

@@ -185,8 +185,10 @@ export async function generateEmbarquePDF(
           const childData = (passenger.is_child && passenger.child_data) ? passenger.child_data : null;
           const clientData = passenger.client;
           
-          const rg = childData?.rg || clientData?.rg;
-          const cpf = childData?.cpf || clientData?.cpf;
+          // Only fallback to client data if this IS a companion of THAT client
+          // We check if child_data belongs to a companion record that is actually the passenger
+          const rg = childData?.rg || (passenger.is_child ? '' : clientData?.rg);
+          const cpf = childData?.cpf || (passenger.is_child ? '' : clientData?.cpf);
           
           if (rg) rgCpf.push(`RG: ${rg}`);
           if (cpf) rgCpf.push(`CPF: ${cpf}`);
@@ -250,11 +252,15 @@ export async function generateMotoristaPDF(
         const tableData = sortedPassengers.map((passenger, index) => {
           const childData = (passenger.is_child && passenger.child_data) ? passenger.child_data : null;
           const clientData = passenger.client;
+          
+          const cpf = childData?.cpf || (passenger.is_child ? '' : clientData?.cpf);
+          const rg = childData?.rg || (passenger.is_child ? '' : clientData?.rg);
+          
           return [
             (index + 1).toString(),
             sanitizeTextForPDF(passenger.client_name || 'Nome não informado'),
-            childData?.cpf || clientData?.cpf || 'N/A',
-            childData?.rg || clientData?.rg || 'N/A',
+            cpf || 'N/A',
+            rg || 'N/A',
           ];
         });
         

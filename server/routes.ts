@@ -2379,9 +2379,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         child_id?: string;
       }> = [];
       
+      const normalizedReservedNames = new Set(reservations.map(r => r.client_name?.toLowerCase().trim()));
+      
       for (const client of allClients) {
-        // Add client if they don't have a seat
-        if (!reservedClientIds.has(client.id)) {
+        const clientName = `${client.first_name} ${client.last_name}`.toLowerCase().trim();
+        // Add client if they don't have a seat AND their name isn't already on a seat
+        if (!reservedClientIds.has(client.id) && !normalizedReservedNames.has(clientName)) {
           unassignedPassengers.push({
             id: client.id,
             name: `${client.first_name} ${client.last_name}`,
@@ -2396,7 +2399,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Get children/companions for this client
         const children = await storage.getChildrenByClientId(client.id);
         for (const child of children) {
-          if (!reservedChildIds.has(child.id)) {
+          const childName = child.name.toLowerCase().trim();
+          if (!reservedChildIds.has(child.id) && !normalizedReservedNames.has(childName)) {
             unassignedPassengers.push({
               id: `child-${child.id}`,
               name: child.name,
